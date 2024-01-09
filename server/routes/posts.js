@@ -1,79 +1,148 @@
-const request = require('supertest')
-const app = require('../server')
+const express = require('express')
+const router = express.Router()
+const Post = require('../models/Post') // Adjust the path as necessary
 
-describe('Post Routes', () => {
-	let newPostId
-	let commentId
-
-	// Test for Creating a Post
-	describe('POST /posts', () => {
-		it('should create a new post', async () => {
-			const res = await request(app)
-				.post('/posts')
-				.send({
-					title: 'Test Post',
-					content: 'This is a test post',
-					author: 'Test Author',
-					category: 'Test Category',
-					tags: ['test', 'post'],
-				})
-			expect(res.statusCode).toEqual(201)
-			expect(res.body).toHaveProperty('success', true)
-			newPostId = res.body.post._id // Store new post ID for further tests
-		})
-	})
-
-	// Test for Updating a Post
-	describe('PATCH /posts/:postId', () => {
-		it('should update the post details', async () => {
-			const res = await request(app)
-				.patch(`/posts/${newPostId}`)
-				.send({ title: 'Updated Test Post' })
-			expect(res.statusCode).toEqual(200)
-			expect(res.body).toHaveProperty('success', true)
-		})
-	})
-
-	// Test for Adding a Comment to a Post
-	describe('POST /posts/:postId/comments', () => {
-		it('should add a comment to the post', async () => {
-			const res = await request(app).post(`/posts/${newPostId}/comments`).send({
-				content: 'This is a test comment',
-				author: 'Commenter',
-			})
-			expect(res.statusCode).toEqual(201)
-			expect(res.body).toHaveProperty('success', true)
-			commentId = res.body.commentId
-		})
-	})
-
-	// Test for Getting Comments for a Post
-	describe('GET /posts/:postId/comments', () => {
-		it('should get comments for the post', async () => {
-			const res = await request(app).get(`/posts/${newPostId}/comments`)
-			expect(res.statusCode).toEqual(200)
-			expect(res.body).toHaveProperty('success', true)
-		})
-	})
-
-	// Test for Deleting a Comment from a Post
-	// Note: This test requires a valid comment ID which should be obtained after creating a comment
-	describe('DELETE /posts/:postId/comments/:commentId', () => {
-		it('should delete a comment from the post', async () => {
-			const res = await request(app).delete(
-				`/posts/${newPostId}/comments/${commentId}`
-			)
-			expect(res.statusCode).toEqual(200)
-			expect(res.body).toHaveProperty('success', true)
-		})
-	})
-
-	// Test for Deleting a Post
-	describe('DELETE /posts/:postId', () => {
-		it('should delete the post', async () => {
-			const res = await request(app).delete(`/posts/${newPostId}`)
-			expect(res.statusCode).toEqual(200)
-			expect(res.body).toHaveProperty('success', true)
-		})
-	})
+// Get all posts
+router.get('/', async (req, res) => {
+	try {
+		const posts = await Post.find()
+		res.json({ success: true, posts })
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error fetching posts' })
+	}
 })
+
+// Submit a post
+router.post('/', async (req, res) => {
+	const post = new Post({
+		title: req.body.title,
+		content: req.body.content,
+		author: req.body.author,
+		category: req.body.category,
+		tags: req.body.tags,
+	})
+
+	try {
+		const savedPost = await post.save()
+		res.status(201).json({
+			success: true,
+			message: 'Post created successfully',
+			post: savedPost,
+		})
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error creating post' })
+	}
+})
+
+// Update a post
+router.patch('/:postId', async (req, res) => {
+	try {
+		const updatedPost = await Post.findByIdAndUpdate(
+			req.params.postId,
+			{
+				$set: {
+					title: req.body.title,
+					content: req.body.content,
+					author: req.body.author,
+					category: req.body.category,
+					tags: req.body.tags,
+				},
+			},
+			{ new: true }
+		)
+
+		if (!updatedPost) {
+			return res
+				.status(404)
+				.json({ success: false, message: 'No post found to update' })
+		}
+
+		res.json({ success: true, message: 'Post updated successfully' })
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error updating post' })
+	}
+})
+
+// Delete a post
+router.delete('/:postId', async (req, res) => {
+	try {
+		const removedPost = await Post.findByIdAndDelete(req.params.postId)
+		if (!removedPost) {
+			return res
+				.status(404)
+				.json({ success: false, message: 'No post found to delete' })
+		}
+		res.json({ success: true, message: 'Post deleted successfully' })
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error deleting post' })
+	}
+})
+
+// Add a comment
+router.post('/:postId/comments', async (req, res) => {
+	try {
+		const post = await Post.findById(req.params.postId)
+		if (!post) {
+			return res
+				.status(404)
+				.json({ success: false, message: 'Post not found for adding comment' })
+		}
+
+		const newComment = {
+			content: req.body.content,
+			author: req.body.author,
+		}
+
+		post.comments.push(newComment)
+		await post.save()
+
+		res.status(201).json({
+			success: true,
+			message: 'Comment added successfully',
+			comment: newComment,
+		})
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error adding comment' })
+	}
+})
+
+// Get Comments for a Post
+router.get('/:postId/comments', async (req, res) => {
+	try {
+		const post = await Post.findById(req.params.postId).populate('comments')
+		if (!post) {
+			return res.status(404).json({
+				success: false,
+				message: 'Post not found for fetching comments',
+			})
+		}
+
+		res.json({ success: true, comments: post.comments })
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error fetching comments' })
+	}
+})
+
+// Delete a Comment
+router.delete('/:postId/comments/:commentId', async (req, res) => {
+	try {
+		const post = await Post.findById(req.params.postId)
+		if (!post) {
+			return res.status(404).json({
+				success: false,
+				message: 'Post not found for deleting comment',
+			})
+		}
+
+		post.comments = post.comments.filter(
+			(comment) => comment._id.toString() !== req.params.commentId
+		)
+		await post.save()
+
+		res.json({ success: true, message: 'Comment deleted successfully' })
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error deleting comment' })
+	}
+})
+
+module.exports = router
