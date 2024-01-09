@@ -22,8 +22,11 @@ mongoose
 	.then(() => console.log('MongoDB connected'))
 	.catch((err) => console.error(err))
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 8080
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+// Only start the server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+	app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+}
 
 module.exports = app
