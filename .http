@@ -1,0 +1,22 @@
+GET https://localhost:3333/users/search?diego
+
+###
+
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "name": "diego camara",
+  "email": "diegodscamara@gmail.com",
+  "password": "fhx7wkpd"
+}
+
+###
+
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "diegodscamara@gmail.com",
+  "password": "fhx7wkpd"
+}
