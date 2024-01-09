@@ -11,8 +11,8 @@ POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-  "name": "Paulo Pedro",
-  "email": "paulo@hotmail.com",
+  "name": "John Doe2",
+  "email": "joendoe2@hotmail.com",
   "password": "123456789"
 }
 
@@ -84,7 +84,7 @@ POST http://localhost:8080/posts/659caab68f798385b0f4e5d9/comments
 Content-Type: application/json
 
 {
-  "content": "Second comment",
+  "content": "Another comment",
   "author": "Diego Camara"
 }
 

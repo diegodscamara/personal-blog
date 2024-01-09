@@ -7,11 +7,14 @@ const jwt = require('jsonwebtoken')
 router.post('/register', async (req, res) => {
 	try {
 		const { name, email, password } = req.body
-		const user = new User({ name, email, password })
-		await user.save()
-		res
-			.status(201)
-			.json({ success: true, message: 'User registered successfully' })
+		const user = new User({ name, email, password }) // Create new user
+		await user.save() // Save the user
+
+		res.status(201).json({
+			success: true,
+			message: 'User registered successfully',
+			user: { id: user.id }, // Return the ID of the saved user
+		})
 	} catch (err) {
 		res.status(500).json({
 			success: false,
@@ -122,13 +125,11 @@ router.patch('/:userId', async (req, res) => {
 			user: updatedUser,
 		})
 	} catch (err) {
-		res
-			.status(500)
-			.json({
-				success: false,
-				message: 'Error updating user',
-				error: err.message,
-			})
+		res.status(500).json({
+			success: false,
+			message: 'Error updating user',
+			error: err.message,
+		})
 	}
 })
 
