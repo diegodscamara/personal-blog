@@ -1,4 +1,9 @@
-GET https://localhost:3333/users/search?diego
+// Users requests
+GET http://localhost:8080/users/search?email=camara
+
+###
+
+GET http://localhost:8080/users/list
 
 ###
 
@@ -6,9 +11,9 @@ POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-  "name": "diego camara",
-  "email": "diegodscamara@gmail.com",
-  "password": "fhx7wkpd"
+  "name": "Paulo Pedro",
+  "email": "paulo@hotmail.com",
+  "password": "123456789"
 }
 
 ###
@@ -20,3 +25,69 @@ Content-Type: application/json
   "email": "diegodscamara@gmail.com",
   "password": "fhx7wkpd"
 }
+
+###
+
+DELETE http://localhost:8080/users/659ca7ea8f798385b0f4e5c2
+
+###
+
+PATCH http://localhost:8080/users/659ca84e8f798385b0f4e5c6
+Content-Type: application/json
+
+{
+  "name": "Diego Câmara"
+}
+
+###
+
+//Posts request
+
+GET http://localhost:8080/posts
+
+
+###
+
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "Sample Post",
+  "content": "This is a sample post.",
+  "author": "John Doe",
+  "category": "Technology",
+  "tags": ["JavaScript", "Node.js", "Express"]
+}
+
+###
+
+PATCH http://localhost:8080/posts/659caab68f798385b0f4e5d9
+Content-Type: application/json
+
+{
+  "title": "Sample Post 2",
+  "category": "Technology",
+  "tags": ["JavaScript", "Node.js", "Express"]
+}
+
+###
+
+DELETE http://localhost:8080/posts/659cab8f8f798385b0f4e5db
+
+###
+
+GET http://localhost:8080/posts/659caab68f798385b0f4e5d9/comments
+
+###
+
+POST http://localhost:8080/posts/659caab68f798385b0f4e5d9/comments
+Content-Type: application/json
+
+{
+  "content": "Second comment",
+  "author": "Diego Camara"
+}
+
+###
+
+DELETE http://localhost:8080/posts/659caab68f798385b0f4e5d9/comments/659caeb5d540327b30c13a70
