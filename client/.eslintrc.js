@@ -20,6 +20,12 @@ module.exports = {
       ],
       files: ['*.ts', '*.tsx'],
     },
+    {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        'react/prop-types': 'off',
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: 'latest',
