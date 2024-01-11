@@ -34,6 +34,19 @@ router.post('/', async (req, res) => {
 	}
 })
 
+// Get a single post by ID
+router.get('/:postId', async (req, res) => {
+	try {
+		const post = await Post.findById(req.params.postId)
+		if (!post) {
+			return res.status(404).json({ success: false, message: 'Post not found' })
+		}
+		res.json({ success: true, post })
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Error fetching the post' })
+	}
+})
+
 // Update a post
 router.patch('/:postId', async (req, res) => {
 	try {
@@ -142,6 +155,57 @@ router.delete('/:postId/comments/:commentId', async (req, res) => {
 		res.json({ success: true, message: 'Comment deleted successfully' })
 	} catch (err) {
 		res.status(500).json({ success: false, message: 'Error deleting comment' })
+	}
+})
+
+// Search for posts
+router.get('/search', async (req, res) => {
+	try {
+		// Extract query parameters
+		const { query, startDate, endDate } = req.query
+
+		// Build a search query object
+		let searchQuery = {
+			$or: [
+				{ title: { $regex: query, $options: 'i' } },
+				{ content: { $regex: query, $options: 'i' } },
+				{ author: { $regex: query, $options: 'i' } },
+				{ category: { $regex: query, $options: 'i' } },
+				{ tags: { $regex: query, $options: 'i' } },
+				// Add other fields if necessary
+			],
+		}
+
+		// If date range is provided, add it to the search query
+		if (startDate || endDate) {
+			searchQuery.createdAt = {}
+			if (startDate) {
+				// Parse startDate and ensure it's a valid date
+				const parsedStartDate = new Date(startDate)
+				if (!isNaN(parsedStartDate)) {
+					searchQuery.createdAt.$gte = parsedStartDate
+				}
+			}
+			if (endDate) {
+				// Parse endDate and ensure it's a valid date
+				const parsedEndDate = new Date(endDate)
+				if (!isNaN(parsedEndDate)) {
+					searchQuery.createdAt.$lte = parsedEndDate
+				}
+			}
+		}
+
+		// Find posts that match the search query
+		const posts = await Post.find(searchQuery)
+		res.json({ success: true, posts })
+	} catch (err) {
+		res
+			.status(500)
+			.json({
+				success: false,
+				message: 'Error searching posts',
+				error: err.message,
+			})
 	}
 })
 

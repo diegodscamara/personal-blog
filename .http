@@ -52,9 +52,9 @@ POST http://localhost:8080/posts
 Content-Type: application/json
 
 {
-  "title": "Sample Post",
-  "content": "This is a sample post.",
-  "author": "John Doe",
+  "title": "How to use React",
+  "content": "React is a simple and simple application that provides a simple way to create and manage a React application",
+  "author": "Diego Câmara",
   "category": "Technology",
   "tags": ["JavaScript", "Node.js", "Express"]
 }
