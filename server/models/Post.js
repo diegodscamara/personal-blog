@@ -14,6 +14,7 @@ const postSchema = new mongoose.Schema({
 	tags: [String],
 	comments: [commentSchema], // Array of comment subdocuments
 	createdAt: { type: Date, default: Date.now },
+	thumbnail: String,
 })
 
 module.exports = mongoose.model('Post', postSchema)

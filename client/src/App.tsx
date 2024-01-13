@@ -4,6 +4,7 @@ import { Home } from './pages/home'
 import Layout from './components/layout'
 import PostPage from './pages/post'
 import React from 'react'
+import SearchPage from './pages/search'
 import { ThemeProvider } from './components/theme-provider'
 
 function App(): JSX.Element {
@@ -14,8 +15,7 @@ function App(): JSX.Element {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/posts/:postId" element={<PostPage />} />
-            {/*  <Route path="/contact" element={<ContactPage />} /> */}
-            {/* other routes */}
+            <Route path="/search" element={<SearchPage />} />
           </Routes>
         </Layout>
       </Router>

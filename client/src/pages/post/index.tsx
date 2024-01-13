@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/FormatDate'
-import { useParams } from 'react-router-dom'
+import { formatDateForSearch } from '@/lib/FormatDateForSeach'
 
 interface Post {
   title: string
@@ -16,6 +17,7 @@ interface Post {
 const PostPage: React.FC = (): JSX.Element => {
   const [post, setPost] = useState<Post | null>(null)
   const { postId } = useParams<{ postId: string }>()
+  const navigate = useNavigate()
 
   const fetchPost = useCallback(async (): Promise<void> => {
     try {
@@ -38,6 +40,29 @@ const PostPage: React.FC = (): JSX.Element => {
     fetchPost()
   }, [fetchPost])
 
+  const handleAuthorClick = () => {
+    navigate(`/search?query=${post?.author}`)
+  }
+
+  const handleCategoryClick = () => {
+    navigate(`/search?query=${post?.category}`)
+  }
+
+  const handleTagClick = (tag: string) => {
+    navigate(`/search?query=${tag}`)
+  }
+
+  const handleDateClick = () => {
+    if (post?.createdAt) {
+      const formattedDate = formatDateForSearch(post.createdAt)
+      const queryParams = new URLSearchParams({
+        startDate: formattedDate,
+        endDate: formattedDate,
+      }).toString()
+      navigate(`/search?${queryParams}`)
+    }
+  }
+
   if (!post) return <div className="text-center text-slate-50">Loading...</div>
 
   return (
@@ -47,14 +72,23 @@ const PostPage: React.FC = (): JSX.Element => {
       </h1>
 
       <div className="flex gap-4 items-center justify-center">
-        <span className="ml-2 font-semibold text-slate-600 dark:text-white md:ml-0">
-          {post.author}
+        <span
+          className="ml-2 font-semibold text-slate-600 dark:text-white md:ml-0 cursor-pointer"
+          onClick={handleAuthorClick}
+        >
+          {post?.author}
         </span>
-        <span className="tooltip-handle text-slate-600 dark:text-slate-400">
-          {post.createdAt}
+        <span
+          className="tooltip-handle text-slate-600 dark:text-slate-400 cursor-pointer"
+          onClick={handleDateClick}
+        >
+          {post?.createdAt}
         </span>
-        <span className="tooltip-handle text-slate-600 dark:text-slate-400">
-          {post.category}
+        <span
+          className="tooltip-handle text-slate-600 dark:text-slate-400 cursor-pointer"
+          onClick={handleCategoryClick}
+        >
+          {post?.category}
         </span>
       </div>
 
@@ -62,12 +96,9 @@ const PostPage: React.FC = (): JSX.Element => {
         {post.content}
       </p>
 
-      <div className="flex gap-4 items-center justify-center">
-        {post.tags.map((tag) => (
-          <Badge
-            className="mb-3 mr-3 rounded-lg border bg-slate-100 px-2 py-1 text-base font-medium text-slate-700 hover:bg-slate-200 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-            key={tag}
-          >
+      <div className="flex gap-4 items-center justify-center cursor-pointer">
+        {post?.tags.map((tag) => (
+          <Badge key={tag} onClick={() => handleTagClick(tag)}>
             {tag}
           </Badge>
         ))}
