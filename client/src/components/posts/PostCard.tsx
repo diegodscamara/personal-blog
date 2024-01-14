@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+import { Badge } from '../ui/badge'
 import { Link } from 'react-router-dom'
 import React from 'react'
 
@@ -36,14 +37,20 @@ const PostCard: React.FC<{ post: Post; isLarge?: boolean }> = ({ post }) => {
           <CardContent className="m-0 p-0 break-words text-lg leading-snug text-slate-500 hover:opacity-75 dark:text-slate-400">
             By {post.content}
           </CardContent>
-          <CardFooter className="m-0 p-0 flex justify-baseline items-center gap-2">
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>DC</AvatarFallback>
-            </Avatar>
-            <p className="text-sm blog-article-card-author-name block font-semibold text-slate-700 dark:text-slate-400">
-              By {post.author}
-            </p>
+          <CardFooter className="m-0 p-0 flex flex-col justify-baseline items-start gap-2">
+            <div className='flex gap-2 items-center'>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>DC</AvatarFallback>
+              </Avatar>
+              <p className="text-sm blog-article-card-author-name block font-semibold text-slate-700 dark:text-slate-400">
+                By {post.author}
+              </p>
+            </div>
+
+            <div className="flex gap-4 items-center justify-start flex-wrap">
+              {post?.tags.map((tag) => <Badge className='bg-slate-500' key={tag}>{tag}</Badge>)}
+            </div>
           </CardFooter>
         </CardDescription>
       </Link>

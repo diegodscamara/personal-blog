@@ -41,7 +41,7 @@ export function NavBar() {
 
                 <DropdownMenuContent
                   align="end"
-                  className="p-2 flex flex-col gap-2"
+                  className="p-2 flex flex-col gap-2 max-w-calc"
                 >
                   <DropdownMenuLabel>Ready to get started?</DropdownMenuLabel>
                   <DropdownMenuSeparator />
