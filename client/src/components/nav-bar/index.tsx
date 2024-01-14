@@ -1,10 +1,20 @@
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu'
+import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 
+import { Button } from '../ui/button'
+import { ChevronDown } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ModeToggle } from '../mode-toggle'
 import React from 'react'
@@ -16,36 +26,43 @@ export function NavBar() {
         <Link to="/">Personal Blog</Link>
       </h1>
 
-      <div className="flex items-center gap-12">
+      <div className="flex items-center gap-4">
+        <ModeToggle />
+
         <NavigationMenu>
           <NavigationMenuList className="gap-8">
             <NavigationMenuItem>
-              <NavigationMenuLink
-                className=" block rounded-lg px-2 py-1 ring-offset-2 transition-colors duration-150 group-focus:ring text-slate-900 hover:bg-slate-100 group-focus:ring-blue-600 group-focus:ring-offset-white dark:text-white dark:hover:bg-slate-800 dark:group-focus:ring-offset-slate-800 font-semibold text-opacity-100 dark:text-opacity-100"
-                href="/"
-              >
-                Home
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink
-                className='block rounded-lg px-2 py-1 ring-offset-2 transition-colors duration-150 group-focus:ring text-slate-900 hover:bg-slate-100 group-focus:ring-blue-600 group-focus:ring-offset-white dark:text-white dark:hover:bg-slate-800 dark:group-focus:ring-offset-slate-800 font-semibold text-opacity-100 dark:text-opacity-100"'
-                href="/loginn"
-              >
-                Login
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink
-                className='block rounded-lg px-2 py-1 ring-offset-2 transition-colors duration-150 group-focus:ring text-slate-900 hover:bg-slate-100 group-focus:ring-blue-600 group-focus:ring-offset-white dark:text-white dark:hover:bg-slate-800 dark:group-focus:ring-offset-slate-800 font-semibold text-opacity-100 dark:text-opacity-100"'
-                href="/signup"
-              >
-                Signup
-              </NavigationMenuLink>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="outline" size="icon" title="Sign in options">
+                    <ChevronDown size={32} />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  align="end"
+                  className="p-2 flex flex-col gap-2"
+                >
+                  <DropdownMenuLabel>Ready to get started?</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className='font-normal text-slate-400'>
+                    Don&apos;t miss my next articles, sign in with your account.
+                  </DropdownMenuLabel>
+
+                  <DropdownMenuItem>
+                    <NavigationMenuLink href="/login">Login</NavigationMenuLink>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem>
+                    <NavigationMenuLink href="/signup">
+                      Signup
+                    </NavigationMenuLink>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-        <ModeToggle />
       </div>
     </nav>
   )

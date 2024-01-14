@@ -17,8 +17,10 @@ interface Post {
  */
 export function Home(): JSX.Element {
   const [posts, setPosts] = useState<Post[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
+    setIsLoading(true)
     fetch('http://localhost:8080/posts')
       .then((response) => response.json())
       .then((data: { success: boolean; posts: Post[] }) => {
@@ -29,7 +31,8 @@ export function Home(): JSX.Element {
       .catch((error: Error) => {
         console.error('Error fetching posts:', error)
       })
+      .finally(() => setIsLoading(false))
   }, [])
 
-  return <PostList posts={posts} />
+  return <PostList posts={posts} isLoading={isLoading} />
 }

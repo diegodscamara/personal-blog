@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react'
+import { SearchIcon, X } from 'lucide-react'
 
+import { Input } from '@/components/ui/input'
 import PostList from '@/components/posts/PostList'
+import { Separator } from '@/components/ui/separator'
 import { useLocation } from 'react-router-dom'
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [isLoading, setisLoading] = useState(false)
   const [posts, setPosts] = useState([])
   const location = useLocation()
 
@@ -19,6 +23,7 @@ const SearchPage = () => {
 
   const fetchPosts = async (query: string | number | boolean) => {
     const encodedQuery = encodeURIComponent(query)
+    setisLoading(true)
     try {
       const response = await fetch(
         `http://localhost:8080/posts/search?query=${encodedQuery}`,
@@ -26,6 +31,7 @@ const SearchPage = () => {
       const data = await response.json()
       if (data.success) {
         setPosts(data.posts)
+        setisLoading(false)
       } else {
         setPosts([])
       }
@@ -36,22 +42,48 @@ const SearchPage = () => {
   }
 
   const handleSearch = async (event: { preventDefault: () => void }) => {
+    if (searchQuery.length > 0) {
+      event.preventDefault()
+      fetchPosts(searchQuery)
+    }
+  }
+
+  const handleClear = async (event: { preventDefault: () => void }) => {
     event.preventDefault()
-    fetchPosts(searchQuery)
+    setSearchQuery('')
+    fetchPosts('')
   }
 
   return (
     <div>
-      <form onSubmit={handleSearch}>
-        <input
+      <form className="relative max-w-96">
+        <Input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search posts..."
         />
-        <button type="submit">Search</button>
+        <SearchIcon
+          onClick={handleSearch}
+          size={20}
+          className={`absolute top-2.5 cursor-pointer ${
+            searchQuery.length > 0 ? 'right-12' : 'right-4'
+          }`}
+        />
+        <X
+          onClick={handleClear}
+          size={20}
+          className={`absolute top-2.5 cursor-pointer ${
+            searchQuery === '' ? 'hidden' : 'right-4'
+          }`}
+        />
       </form>
-      {posts.length > 0 ? <PostList posts={posts} /> : <p>No results found</p>}
+      <Separator className="my-4" />
+      {posts.length > 0 ? (
+        <PostList posts={posts} isLoading={isLoading} />
+      ) : (
+        <p>No results found</p>
+      )}
     </div>
   )
 }

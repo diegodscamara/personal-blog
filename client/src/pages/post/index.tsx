@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -55,11 +56,7 @@ const PostPage: React.FC = (): JSX.Element => {
   const handleDateClick = () => {
     if (post?.createdAt) {
       const formattedDate = formatDateForSearch(post.createdAt)
-      const queryParams = new URLSearchParams({
-        startDate: formattedDate,
-        endDate: formattedDate,
-      }).toString()
-      navigate(`/search?${queryParams}`)
+      navigate(`/search?query=${formattedDate}`)
     }
   }
 
@@ -72,12 +69,18 @@ const PostPage: React.FC = (): JSX.Element => {
       </h1>
 
       <div className="flex gap-4 items-center justify-center">
-        <span
-          className="ml-2 font-semibold text-slate-600 dark:text-white md:ml-0 cursor-pointer"
+        <div
+          className="flex justify-baseline items-center gap-2 cursor-pointer"
           onClick={handleAuthorClick}
         >
-          {post?.author}
-        </span>
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>DC</AvatarFallback>
+          </Avatar>
+          <span className="ml-2 font-semibold text-slate-600 dark:text-white md:ml-0 ">
+            {post?.author}
+          </span>
+        </div>
         <span
           className="tooltip-handle text-slate-600 dark:text-slate-400 cursor-pointer"
           onClick={handleDateClick}
